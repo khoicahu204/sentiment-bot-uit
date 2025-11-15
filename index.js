@@ -22,10 +22,14 @@ const { SentimentBot } = require('./bot');
 const server = restify.createServer();
 server.use(restify.plugins.bodyParser());
 
-server.listen(process.env.port || process.env.PORT || 3978, () => {
-    console.log(`\n${ server.name } listening to ${ server.url }`);
-    console.log('\nGet Bot Framework Emulator: https://aka.ms/botframework-emulator');
-    console.log('\nTo talk to your bot, open the emulator select "Open Bot"');
+// Lấy cổng (port) từ biến môi trường của Azure, hoặc 3978 nếu chạy local
+const port = process.env.port || process.env.PORT || 3978;
+
+// Listen for incoming requests
+server.listen(port, () => {
+    console.log(`\n${ server.name } listening to ${ server.url } on port ${port}`); // <--- SỬA DÒNG NÀY
+    console.log('\nGet Bot Framework Emulator: https://aka.ms/bot-framework-emulator');
+    console.log(`\nTo talk to your bot (locally), open the emulator and connect to http://localhost:${port}/api/messages`); // <--- SỬA DÒNG NÀY
 });
 
 const credentialsFactory = new ConfigurationServiceClientCredentialFactory({
@@ -83,3 +87,4 @@ server.on('upgrade', async (req, socket, head) => {
 
     await streamingAdapter.process(req, socket, head, (context) => myBot.run(context));
 });
+
